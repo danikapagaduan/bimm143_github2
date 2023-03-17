@@ -16,6 +16,6 @@ My classwork from [BIMM143](https://bioboot.github.io/bimm143_W23/) at UC San Di
 - Class 14: [Hands-on with Git and GitHub]()
 - Class 15: [Essential UNIX for bioinformatics]()
 - Class 16: [Analyzing sequencing data in the cloud]()
-- Class 17: [Vaccination rate mini project]()
+- Class 17: [Vaccination rate mini project](https://github.com/danikapagaduan/bimm143_github2/blob/main/class17/class17.qmd)
 - CLass 18: [Mutational signatures of cancer mini project]()
-- Class 19: [Investigating pertussis resurgence mini project]()
+- Class 19: [Investigating pertussis resurgence mini project](https://github.com/danikapagaduan/bimm143_github2/blob/main/class19/class19.qmd)
