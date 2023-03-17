@@ -1,0 +1,216 @@
+---
+title: "Class 7: Machine Learning I"
+author: "Danika"
+format: pdf
+---
+
+In this class we will explore clustering and dimensionality reduction
+
+## K-means
+
+Make up some input data where we know what the answer should be.
+
+```{r}
+tmp <- c(rnorm(30,-3), rnorm(30,+3))
+x <- cbind(x=tmp,y=rev(tmp))
+head(x)
+```
+
+
+Quick plot of x to see the two groups at -3, +3 and +3, -3
+```{r}
+plot(x)
+```
+
+Use the 'kmeans()' function setting k to 2 and nstart=20
+
+```{r}
+km <- kmeans(x, centers=2, nstart=20)
+km
+```
+
+
+
+> Q. How many points are in each cluster?
+
+```{r}
+km$size
+```
+
+> Q. What 'component' of your result object detail?
+    - cluster assignment/ membership?
+    - cluster center?
+
+```{r}
+km$cluster
+km$centers
+```
+
+> Plot x colored by the kmeans cluster assignment and add cluster centers as blue points
+
+```{r}
+plot(x, col=km$cluster,)
+points(km$centers, col="blue", pch=15, cex=2)
+```
+
+Play with kmeans and ask for different number clusters
+```{r}
+km <- kmeans(x, centers=4, nstart=20)
+plot(x, col=km$cluster,)
+points(km$centers, col="blue", pch=16, cex=2)
+```
+
+# Hierarchical Clustering
+
+This is another very useful and widely employed clustering methods which has the advantage over kmeans in that it can help reveal the something of the true grouping in your data.
+
+The 'hclust()' function wants a distance matrix as input. We can get this from the 'dist()' function.
+
+```{r}
+d <- dist(x)
+hc <- hclust(d)
+hc
+```
+
+There is a plot method for hclust results:
+
+```{r}
+plot(hc)
+abline(h=10, col="red")
+```
+
+It is often helpful to use the 'k=' argument to cutree rather than the 'h=' height of cutting with 'cutree()'. This will cut the tree to yield the number of cluster you want.
+
+```{r}
+cutree(hc,k=4)
+```
+
+To get my cluster membership vector, I need to "cut" my tree to yield sub-tree or branches with all the members of a given cluster residing on the same cut branch. The function to do this is called 'cutree()'
+
+```{r}
+grps <- cutree(hc, h=10)
+grps
+```
+```{r}
+plot (x, col=grps)
+```
+
+# Principal Component Analysis (PCA)
+
+The base R function for PCA is called 'prcomp()'
+
+```{r}
+url <- "https://tinyurl.com/UK-foods"
+x <- read.csv(url)
+```
+
+> Q1. How many rows and columns are in your new data frame named x? What R functions could you use to answer this questions?
+
+```{r}
+dim(x)
+nrow(x)
+ncol(x)
+```
+There are 17 rows and 5 columns. They functions that could be used are 'dim()', 'nrow()', and 'ncol()'
+
+```{r}
+head(x)
+```
+
+# Note how the minus indexing works
+```{r}
+rownames(x) <- x[,1]
+x <- x[,-1]
+head(x)
+```
+```{r}
+dim(x)
+```
+
+```{r}
+x <- read.csv(url, row.names=1)
+head(x)
+```
+> Q2. Which approach to solving the ‘row-names problem’ mentioned above do you prefer and why? Is one approach more robust than another under certain circumstances?
+
+I prefer the second approach using 'x <- read.csv(url, row.names=1)' because it is one less line of code and less defining of variables. The second approach is more robust than the first one because if you continue running the code, it keeps on eliminating the first column and treat it as the row names.
+
+```{r}
+barplot(as.matrix(x), beside=T, col=rainbow(nrow(x)))
+```
+> Q3: Changing what optional argument in the above barplot() function results in the following plot?
+
+```{r}
+barplot(as.matrix(x), beside=F, col=rainbow(nrow(x)))
+```
+The optional argument that can be changed to change the plot it to replace the 'beside=T' to 'beside=F'
+
+> Q5: Generating all pairwise plots may help somewhat. Can you make sense of the following code and resulting figure? What does it mean if a given point lies on the diagonal for a given plot?
+
+```{r}
+pairs(x, col=rainbow(10), pch=16)
+```
+The 'pairs()' code produces a matrix of scatterplots. X is the input data. 'col=rainbow(10)' produces the rainbow color. 'pch=16' produces the shape and size of the points. The resulting figure compares the data from 2 countries. The closer the point is to the middle diagonal, the more similar the data from that specific category is and the farther, the less similar.
+
+> Q6. What is the main differences between N. Ireland and the other countries of the UK in terms of this data-set?
+
+The main differences between the two are the dark blue and orange points.
+
+# Use the prcomp() PCA function 
+
+```{r}
+pca <- prcomp( t(x) )
+summary(pca)
+```
+
+> Q7. Complete the code below to generate a plot of PC1 vs PC2. The second line adds text labels over the data points.
+
+A "PCA plot" (a.k.a "Score plot", PC1vsPC2 plot, etc.)
+
+```{r}
+pca$x
+```
+```{r}
+plot(pca$x[,1], pca$x[,2], 
+     col=c("orange", "red", "blue", "green"), pch=15)
+```
+This code summarizes the similarity between the countries from the data set.
+
+# Plot PC1 vs PC2
+```{r}
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x))
+```
+
+> Q8. Customize your plot so that the colors of the country names match the colors in our UK and Ireland map and table at start of this document.
+
+```{r}
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x), col=c("orange", "red", "blue", "green"), pch=15)
+```
+```{r}
+v <- round( pca$sdev^2/sum(pca$sdev^2) * 100 )
+v
+```
+
+## or the second row here...
+```{r}
+z <- summary(pca)
+z$importance
+```
+
+```{r}
+barplot(v, xlab="Principal Component", ylab="Percent Variation")
+```
+
+## Lets focus on PC1 as it accounts for > 90% of variance
+```{r}
+par(mar=c(10, 3, 0.35, 0))
+barplot( pca$rotation[,1], las=2 )
+```
+> Q9: Generate a similar ‘loadings plot’ for PC2. What two food groups feature prominantely and what does PC2 maninly tell us about?
+
+```{r}
+par(mar=c(10, 3, 0.35, 0))
+barplot( pca$rotation[,2], las=2 )
+```
