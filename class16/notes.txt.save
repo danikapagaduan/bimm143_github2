@@ -1,0 +1,7 @@
+
+
+ Successfully initiated launch of instance (i-0d61bb9b0e59d69d4)
+
+ ssh -i "dkpagadu_bimm143.pem" ubuntu@ec2-34-208-120-17.us-west-2.compute.amazonaws.com
+ scp -r -i "dkpagadu_bimm143.pem" ubuntu@ec2-34-208-120-17.us-west-2.compute.amazonaws.com:~/*_quant 
+.
